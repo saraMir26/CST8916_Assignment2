@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+env/
+.venv/
+
+# Secrets – NEVER commit connection strings
+.env.local
+secrets.sh
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Azure deployment artifacts
+.azure/
