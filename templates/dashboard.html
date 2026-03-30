@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShopStream – Live Analytics Dashboard</title>
+
   <style>
     * {
       box-sizing: border-box;
@@ -19,7 +20,6 @@
       min-height: 100vh;
     }
 
-    /* ── Header ─────────────────────────────────────────────── */
     header {
       background: #161b22;
       border-bottom: 1px solid #30363d;
@@ -55,15 +55,8 @@
     }
 
     @keyframes pulse {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.3;
-      }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
 
     header nav a {
@@ -73,7 +66,6 @@
       margin-left: 16px;
     }
 
-    /* ── KPI cards ──────────────────────────────────────────── */
     .kpi-row {
       display: flex;
       flex-wrap: wrap;
@@ -104,19 +96,10 @@
       color: #58a6ff;
     }
 
-    .kpi .value.green {
-      color: #3fb950;
-    }
+    .green { color: #3fb950; }
+    .yellow { color: #e3b341; }
+    .red { color: #f85149; }
 
-    .kpi .value.yellow {
-      color: #e3b341;
-    }
-
-    .kpi .value.red {
-      color: #f85149;
-    }
-
-    /* ── Section layout ─────────────────────────────────────── */
     .panels {
       display: flex;
       flex-wrap: wrap;
@@ -137,11 +120,9 @@
       font-size: 0.85rem;
       color: #8b949e;
       text-transform: uppercase;
-      letter-spacing: 1px;
       margin-bottom: 16px;
     }
 
-    /* ── Bar chart ──────────────────────────────────────────── */
     .bar-row {
       display: flex;
       align-items: center;
@@ -149,39 +130,24 @@
       gap: 10px;
     }
 
-    .bar-label {
-      width: 120px;
-      font-size: 0.85rem;
-      color: #c9d1d9;
-      flex-shrink: 0;
-    }
-
+    .bar-label { width: 120px; }
     .bar-track {
       flex: 1;
       background: #21262d;
-      border-radius: 4px;
       height: 18px;
-      overflow: hidden;
+      border-radius: 4px;
     }
 
     .bar-fill {
       height: 100%;
       background: #1f6feb;
       border-radius: 4px;
-      transition: width 0.4s ease;
     }
 
-    .bar-count {
-      width: 30px;
-      text-align: right;
-      font-size: 0.85rem;
-      color: #8b949e;
-    }
+    .bar-count { width: 30px; text-align: right; }
 
-    /* ── Event feed ─────────────────────────────────────────── */
     #feed {
-      font-family: "Courier New", monospace;
-      font-size: 0.78rem;
+      font-family: monospace;
       max-height: 320px;
       overflow-y: auto;
     }
@@ -193,154 +159,74 @@
       border-bottom: 1px solid #21262d;
     }
 
-    .feed-row:last-child {
-      border-bottom: none;
-    }
+    .feed-ts { width: 90px; color: #484f58; }
+    .feed-type { width: 110px; }
+    .feed-page { flex: 1; color: #8b949e; }
+    .feed-user { width: 60px; color: #484f58; }
 
-    .feed-ts {
-      color: #484f58;
-      flex-shrink: 0;
-      width: 90px;
-    }
-
-    .feed-type {
-      flex-shrink: 0;
-      width: 110px;
-    }
-
-    .feed-page {
-      color: #8b949e;
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .feed-user {
-      color: #484f58;
-      flex-shrink: 0;
-      width: 60px;
-    }
-
-    /* event type colours */
-    .t-page_view {
-      color: #58a6ff;
-    }
-
-    .t-product_click {
-      color: #3fb950;
-    }
-
-    .t-add_to_cart {
-      color: #e3b341;
-    }
-
-    .t-purchase {
-      color: #f85149;
-    }
-
-    .t-banner_click {
-      color: #bc8cff;
-    }
-
-    .t-unknown {
-      color: #8b949e;
-    }
-
-    /* ── Footer ─────────────────────────────────────────────── */
     footer {
       text-align: center;
       padding: 16px;
-      color: #484f58;
       font-size: 0.78rem;
       border-top: 1px solid #21262d;
+      color: #484f58;
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ── Header ─────────────────────────────────────────────────── -->
-  <header>
-    <h1>ShopStream – Live Analytics</h1>
-    <div style="display:flex; align-items:center; gap:16px;">
-      <div class="live-badge">
-        <div class="dot"></div> LIVE
-      </div>
-      <nav>
-        <a href="/">← Back to Store</a>
-      </nav>
+<header>
+  <h1>ShopStream – Live Analytics</h1>
+  <div style="display:flex; gap:16px;">
+    <div class="live-badge" aria-live="polite">
+      <div class="dot"></div> LIVE
     </div>
-  </header>
+    <nav>
+      <a href="/">← Back to Store</a>
+    </nav>
+  </div>
+</header>
 
-  <!-- ── KPI row ────────────────────────────────────────────────── -->
-  <div class="kpi-row">
-    <div class="kpi">
-      <div class="label">Total Events</div>
-      <div class="value" id="kpi-total">–</div>
-    </div>
-    <div class="kpi">
-      <div class="label">Page Views</div>
-      <div class="value green" id="kpi-views">–</div>
-    </div>
-    <div class="kpi">
-      <div class="label">Add to Cart</div>
-      <div class="value yellow" id="kpi-cart">–</div>
-    </div>
-    <div class="kpi">
-      <div class="label">Purchases</div>
-      <div class="value red" id="kpi-purchase">–</div>
-    </div>
+<div class="kpi-row">
+  <div class="kpi"><div class="label">Total Events</div><div class="value" id="kpi-total">–</div></div>
+  <div class="kpi"><div class="label">Page Views</div><div class="value green" id="kpi-views">–</div></div>
+  <div class="kpi"><div class="label">Add to Cart</div><div class="value yellow" id="kpi-cart">–</div></div>
+  <div class="kpi"><div class="label">Purchases</div><div class="value red" id="kpi-purchase">–</div></div>
+</div>
+
+<div class="panels">
+
+  <div class="panel">
+    <h3>Device Type Activity</h3>
+    <div id="device-chart"><p>Waiting...</p></div>
   </div>
 
-  <!-- ── Panels ─────────────────────────────────────────────────── -->
-  <div class="panels">
-
-    <!-- Device Type Breakdown -->
-    <div class="panel" style="max-width:400px;">
-      <h3>Device Type Activity (Stream Analytics)</h3>
-      <div id="device-chart">
-        <p style="color:#484f58; font-size:0.85rem;">Waiting for device data...</p>
-      </div>
-    </div>
-
-    <!-- Traffic Spikes -->
-    <div class="panel" style="max-width:400px;">
-      <h3>Traffic Spikes (Stream Analytics)</h3>
-      <div id="spike-alert">
-        <p style="color:#484f58; font-size:0.85rem;">No spikes detected yet</p>
-      </div>
-    </div>
-
-    <!-- Event type breakdown -->
-    <div class="panel" style="max-width:400px;">
-      <h3>Events by Type</h3>
-      <div id="bar-chart">
-        <p style="color:#484f58; font-size:0.85rem;">Waiting for events...</p>
-      </div>
-    </div>
-
-    <!-- Live event feed -->
-    <div class="panel">
-      <h3>Live Event Feed (from Azure Event Hubs)</h3>
-      <div id="feed">
-        <p style="color:#484f58; font-size:0.85rem;">Waiting for events...</p>
-      </div>
-    </div>
-
+  <div class="panel">
+    <h3>Traffic Spikes</h3>
+    <div id="spike-alert"><p>No spikes</p></div>
   </div>
 
-  <footer>
-    Polling <code>/api/events</code> every 2 seconds &nbsp;|&nbsp;
-    Events consumed from Azure Event Hubs &nbsp;|&nbsp;
-    CST8916 Week 10 Lab
-  </footer>
+  <div class="panel">
+    <h3>Events by Type</h3>
+    <div id="bar-chart"><p>Waiting...</p></div>
+  </div>
 
-  <script>
-  
-    const POLL_INTERVAL_MS = 2000;
+  <div class="panel">
+    <h3>Live Event Feed</h3>
+    <div id="feed"><p>Waiting...</p></div>
+  </div>
 
-    function renderKPIs(data) {
+</div>
+
+<footer>
+  Polling every 2 seconds | Azure Event Hubs
+</footer>
+
+<script>
+const POLL_INTERVAL_MS = 2000;
+
+function renderKPIs(data) {
   document.getElementById("kpi-total").textContent = data.total ?? 0;
   document.getElementById("kpi-views").textContent = data.summary?.page_view ?? 0;
   document.getElementById("kpi-cart").textContent = data.summary?.add_to_cart ?? 0;
@@ -349,79 +235,62 @@
 
 function renderBarChart(summary) {
   const container = document.getElementById("bar-chart");
-  if (!summary || Object.keys(summary).length === 0) return;
+
+  if (!summary || Object.keys(summary).length === 0) {
+    container.innerHTML = "<p>No data yet</p>";
+    return;
+  }
 
   const maxVal = Math.max(...Object.values(summary), 1);
   container.innerHTML = "";
 
   Object.entries(summary).forEach(([type, count]) => {
-    const pct = (count / maxVal * 100).toFixed(1);
+    const pct = (count / maxVal * 100);
 
-    const row = document.createElement("div");
-    row.className = "bar-row";
-    row.innerHTML = `
-      <div class="bar-label">${type}</div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${pct}%"></div>
+    container.innerHTML += `
+      <div class="bar-row">
+        <div class="bar-label">${type}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${pct}%"></div>
+        </div>
+        <div class="bar-count">${count}</div>
       </div>
-      <div class="bar-count">${count}</div>
     `;
-    container.appendChild(row);
   });
 }
 
 function renderFeed(events) {
   const feed = document.getElementById("feed");
-  if (!events || events.length === 0) return;
+
+  if (!events || events.length === 0) {
+    feed.innerHTML = "<p>No events yet</p>";
+    return;
+  }
 
   feed.innerHTML = "";
 
   [...events].reverse().forEach(e => {
-    const row = document.createElement("div");
-    row.className = "feed-row";
-
-    row.innerHTML = `
-      <span class="feed-ts">${e.timestamp?.slice(11,19) || "-"}</span>
-      <span class="feed-type">${e.event_type}</span>
-      <span class="feed-page">${e.page}</span>
-      <span class="feed-user">${e.user_id}</span>
+    feed.innerHTML += `
+      <div class="feed-row">
+        <span class="feed-ts">${e.timestamp?.slice(11,19) || "-"}</span>
+        <span class="feed-type">${e.event_type}</span>
+        <span class="feed-page">${e.page}</span>
+        <span class="feed-user">${e.user_id}</span>
+      </div>
     `;
-
-    feed.appendChild(row);
   });
-}
-
-function fetchAndRender() {
-
-  // events
-  fetch("/api/events?limit=50")
-    .then(res => res.json())
-    .then(data => {
-      renderKPIs(data);
-      renderBarChart(data.summary);
-      renderFeed(data.events);
-    });
-
-  // ✅ devices (correct way)
-  fetch("/api/devices")
-    .then(res => res.json())
-    .then(data => renderDeviceChart(data))
-    .catch(err => console.error("Device error:", err));
-
-  // spikes
-  fetch("/api/spikes")
-    .then(res => res.json())
-    .then(data => renderSpikes(data));
 }
 
 function renderDeviceChart(data) {
   const container = document.getElementById("device-chart");
-  if (!data || data.length === 0) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = "<p>No data</p>";
+    return;
+  }
 
   const summary = {};
-
   data.forEach(d => {
-    if (!d.deviceType) return;
     summary[d.deviceType] = (summary[d.deviceType] || 0) + d.event_count;
   });
 
@@ -429,19 +298,17 @@ function renderDeviceChart(data) {
   container.innerHTML = "";
 
   Object.entries(summary).forEach(([type, count]) => {
-    const pct = (count / maxVal * 100).toFixed(1);
+    const pct = (count / maxVal * 100);
 
-    const row = document.createElement("div");
-    row.className = "bar-row";
-    row.innerHTML = `
-      <div class="bar-label">${type}</div>
-      <div class="bar-track">
-        <div class="bar-fill" style="width:${pct}%"></div>
+    container.innerHTML += `
+      <div class="bar-row">
+        <div class="bar-label">${type}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${pct}%"></div>
+        </div>
+        <div class="bar-count">${count}</div>
       </div>
-      <div class="bar-count">${count}</div>
     `;
-
-    container.appendChild(row);
   });
 }
 
@@ -456,34 +323,36 @@ function renderSpikes(data) {
   const latest = data[data.length - 1];
 
   container.innerHTML = `
-    <div style="color:#f85149; font-weight:bold;">
-      ⚠️ Traffic Spike Detected!
-    </div>
-    <div style="margin-top:6px;">
-      ${latest.total_events} events in last window
-    </div>
+    <div style="color:#f85149; font-weight:bold;">⚠️ Traffic Spike!</div>
+    <div>${latest.total_events} events</div>
   `;
 }
 
 function fetchAndRender() {
-
   fetch("/api/events?limit=50")
     .then(res => res.json())
     .then(data => {
       renderKPIs(data);
       renderBarChart(data.summary);
       renderFeed(data.events);
-    });
+    })
+    .catch(err => console.error("Events error:", err));
 
   fetch("/api/devices")
     .then(res => res.json())
-    .then(data => renderDeviceChart(data));
+    .then(data => renderDeviceChart(data))
+    .catch(err => console.error("Device error:", err));
 
   fetch("/api/spikes")
     .then(res => res.json())
-    .then(data => renderSpikes(data));
+    .then(data => renderSpikes(data))
+    .catch(err => console.error("Spike error:", err));
 }
-</script>
-</body>
 
+// ✅ start polling
+fetchAndRender();
+setInterval(fetchAndRender, POLL_INTERVAL_MS);
+</script>
+
+</body>
 </html>
