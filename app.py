@@ -26,6 +26,10 @@ from flask_cors import CORS
 # ---------------------------------------------------------------------------
 from azure.eventhub import EventHubProducerClient, EventHubConsumerClient, EventData
 
+from azure.storage.blob import BlobServiceClient
+import json
+
+
 app = Flask(__name__, static_folder="static", template_folder="templates")
 CORS(app)
 
@@ -41,12 +45,53 @@ CORS(app)
 CONNECTION_STR = os.environ.get("EVENT_HUB_CONNECTION_STR", "")
 EVENT_HUB_NAME = os.environ.get("EVENT_HUB_NAME", "clickstream")
 
+
+# ---------------------------------------------------------------------------
+# Azure Blob Storage (Stream Analytics output)
+# ---------------------------------------------------------------------------
+STORAGE_CONNECTION_STRING = os.environ.get("STORAGE_CONNECTION_STRING", "")
+CONTAINER_NAME = "stream-output"
+
 # In-memory buffer: stores the last 50 events received by the consumer thread.
 # In a production system you would query a database or Azure Stream Analytics output.
 _event_buffer = []
 _buffer_lock = threading.Lock()
 MAX_BUFFER = 50
 
+
+def get_latest_analytics():
+    """Read latest Stream Analytics output from Blob Storage"""
+    if not STORAGE_CONNECTION_STRING:
+        app.logger.warning("STORAGE_CONNECTION_STRING not set")
+        return []
+
+    blob_service_client = BlobServiceClient.from_connection_string(STORAGE_CONNECTION_STRING)
+    container_client = blob_service_client.get_container_client(CONTAINER_NAME)
+
+    blobs = list(container_client.list_blobs())
+
+    if not blobs:
+        return []
+
+    # Get latest blob (most recent results)
+    latest_blob = sorted(blobs, key=lambda x: x.last_modified, reverse=True)[0]
+
+    blob_client = container_client.get_blob_client(latest_blob.name)
+
+    try:
+        data = blob_client.download_blob().readall()
+        lines = data.decode("utf-8").splitlines()
+
+        results = []
+        for line in lines:
+            if line.strip():
+                results.append(json.loads(line))
+
+        return results
+
+    except Exception as e:
+        app.logger.error(f"Error reading blob: {e}")
+        return []
 
 # ---------------------------------------------------------------------------
 # Helper – send a single event dict to Azure Event Hubs
@@ -187,6 +232,11 @@ def track():
 
     return jsonify({"status": "ok", "event": event}), 201
 
+@app.route("/api/analytics", methods=["GET"])
+def get_analytics():
+    """Return Stream Analytics results"""
+    data = get_latest_analytics()
+    return jsonify({"analytics": data, "count": len(data)}), 200
 
 @app.route("/api/events", methods=["GET"])
 def get_events():
