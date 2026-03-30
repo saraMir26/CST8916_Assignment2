@@ -337,7 +337,59 @@
   </footer>
 
   <script>
+  
     const POLL_INTERVAL_MS = 2000;
+
+    function renderKPIs(data) {
+  document.getElementById("kpi-total").textContent = data.total ?? 0;
+  document.getElementById("kpi-views").textContent = data.summary?.page_view ?? 0;
+  document.getElementById("kpi-cart").textContent = data.summary?.add_to_cart ?? 0;
+  document.getElementById("kpi-purchase").textContent = data.summary?.purchase ?? 0;
+}
+
+function renderBarChart(summary) {
+  const container = document.getElementById("bar-chart");
+  if (!summary || Object.keys(summary).length === 0) return;
+
+  const maxVal = Math.max(...Object.values(summary), 1);
+  container.innerHTML = "";
+
+  Object.entries(summary).forEach(([type, count]) => {
+    const pct = (count / maxVal * 100).toFixed(1);
+
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    row.innerHTML = `
+      <div class="bar-label">${type}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="bar-count">${count}</div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function renderFeed(events) {
+  const feed = document.getElementById("feed");
+  if (!events || events.length === 0) return;
+
+  feed.innerHTML = "";
+
+  [...events].reverse().forEach(e => {
+    const row = document.createElement("div");
+    row.className = "feed-row";
+
+    row.innerHTML = `
+      <span class="feed-ts">${e.timestamp?.slice(11,19) || "-"}</span>
+      <span class="feed-type">${e.event_type}</span>
+      <span class="feed-page">${e.page}</span>
+      <span class="feed-user">${e.user_id}</span>
+    `;
+
+    feed.appendChild(row);
+  });
+}
 
 function fetchAndRender() {
 
@@ -353,7 +405,8 @@ function fetchAndRender() {
   // ✅ devices (correct way)
   fetch("/api/devices")
     .then(res => res.json())
-    .then(data => renderDeviceChart(data));
+    .then(data => renderDeviceChart(data))
+    .catch(err => console.error("Device error:", err));
 
   // spikes
   fetch("/api/spikes")
@@ -361,8 +414,75 @@ function fetchAndRender() {
     .then(data => renderSpikes(data));
 }
 
-fetchAndRender();
-setInterval(fetchAndRender, POLL_INTERVAL_MS);
+function renderDeviceChart(data) {
+  const container = document.getElementById("device-chart");
+  if (!data || data.length === 0) return;
+
+  const summary = {};
+
+  data.forEach(d => {
+    if (!d.deviceType) return;
+    summary[d.deviceType] = (summary[d.deviceType] || 0) + d.event_count;
+  });
+
+  const maxVal = Math.max(...Object.values(summary), 1);
+  container.innerHTML = "";
+
+  Object.entries(summary).forEach(([type, count]) => {
+    const pct = (count / maxVal * 100).toFixed(1);
+
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    row.innerHTML = `
+      <div class="bar-label">${type}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="bar-count">${count}</div>
+    `;
+
+    container.appendChild(row);
+  });
+}
+
+function renderSpikes(data) {
+  const container = document.getElementById("spike-alert");
+
+  if (!data || data.length === 0) {
+    container.innerHTML = "No spikes detected";
+    return;
+  }
+
+  const latest = data[data.length - 1];
+
+  container.innerHTML = `
+    <div style="color:#f85149; font-weight:bold;">
+      ⚠️ Traffic Spike Detected!
+    </div>
+    <div style="margin-top:6px;">
+      ${latest.total_events} events in last window
+    </div>
+  `;
+}
+
+function fetchAndRender() {
+
+  fetch("/api/events?limit=50")
+    .then(res => res.json())
+    .then(data => {
+      renderKPIs(data);
+      renderBarChart(data.summary);
+      renderFeed(data.events);
+    });
+
+  fetch("/api/devices")
+    .then(res => res.json())
+    .then(data => renderDeviceChart(data));
+
+  fetch("/api/spikes")
+    .then(res => res.json())
+    .then(data => renderSpikes(data));
+}
 </script>
 </body>
 
