@@ -2,15 +2,13 @@
 
 ## Real-time Stream Analytics Pipeline
 
-### 👤 Student Information
+#### Name: Sara Mirzaei  
+#### Course: CST8916 – Remote Data and Real-time Applications
 
-Name: Sara Mirzaei
-Course: CST8916 – Remote Data and Real-time Applications
-Semester: Winter 2026
 
 ---
 
-# 📌 Overview
+#  Overview
 
 This project extends the Week 10 lab by building a **real-time clickstream analytics pipeline** using Azure services.
 
@@ -18,7 +16,7 @@ The system captures user interactions from a demo e-commerce store, enriches the
 
 ---
 
-# 🏗️ Architecture
+#  Architecture
 
 ### Data Flow
 
@@ -42,9 +40,9 @@ Dashboard (dashboard.html)
 
 ---
 
-# ⚙️ Features Implemented
+# Features Implemented
 
-## ✅ Part 1 – Event Enrichment
+##  Part 1 – Event Enrichment
 
 Each event sent to Event Hubs includes:
 
@@ -62,9 +60,9 @@ Each event sent to Event Hubs includes:
 
 ---
 
-## ✅ Part 2 – Stream Analytics + Dashboard
+## Part 2 – Stream Analytics + Dashboard
 
-### 🔹 Query 1 – Device Type Breakdown
+###  Query 1 – Device Type Breakdown
 
 ```sql
 SELECT
@@ -79,11 +77,11 @@ GROUP BY
     TumblingWindow(second, 10)
 ```
 
-👉 Shows which device types generate the most traffic.
+ Shows which device types generate the most traffic.
 
 ---
 
-### 🔹 Query 2 – Traffic Spike Detection
+### Query 2 – Traffic Spike Detection
 
 ```sql
 SELECT
@@ -94,14 +92,14 @@ FROM clickstream-input
 TIMESTAMP BY timestamp
 GROUP BY
     TumblingWindow(second, 10)
-HAVING COUNT(*) > 20
+HAVING COUNT(*) > 4
 ```
 
-👉 Detects bursts of activity in the stream.
+ Detects bursts of activity in the stream.
 
 ---
 
-## 📊 Dashboard Features
+##  Dashboard Features
 
 The dashboard displays:
 
@@ -113,7 +111,7 @@ The dashboard displays:
 
 ---
 
-# 🧠 Design Decisions
+#  Design Decisions
 
 ### 1. Client-side Enrichment
 
@@ -147,7 +145,7 @@ Custom endpoints created:
 
 ---
 
-# 🚀 Setup Instructions
+#  Setup Instructions
 
 ## 1. Prerequisites
 
@@ -185,25 +183,10 @@ pip install -r requirements.txt
 python app.py
 ```
 
----
 
-## 5. Deploy to Azure
+#  Video Demo
 
-* Use GitHub Actions or ZIP deploy
-* Ensure:
-
-  * Python version = 3.10
-  * Startup command:
-
-```
-gunicorn app:app
-```
-
----
-
-# 🎥 Video Demo
-
-🔗 YouTube Link: *(Add your unlisted video here)*
+ YouTube Link: *(https://youtu.be/nqHr-T-jcfI)*
 
 The demo includes:
 
@@ -215,22 +198,14 @@ The demo includes:
 
 ---
 
-# 📂 Repository
 
-🔗 GitHub Repo: *(Add your repo link here)*
+#  Important Notes
 
-⚠️ Repository is private and collaborator access is provided.
-
----
-
-# ⚠️ Important Notes
-
-* All Azure resources will be deleted after demo to avoid charges.
 * AI tools were used for guidance, but all code was reviewed and understood.
 
 ---
 
-# ✅ Conclusion
+#  Conclusion
 
 This project successfully demonstrates a complete real-time analytics pipeline using Azure services, providing meaningful insights from clickstream data and visualizing them in a live dashboard.
 
