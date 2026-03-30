@@ -337,143 +337,43 @@
   </footer>
 
   <script>
-const POLL_INTERVAL_MS = 2000;
+    const POLL_INTERVAL_MS = 2000;
 
-const TYPE_CLASS = {
-  page_view: "t-page_view",
-  product_click: "t-product_click",
-  add_to_cart: "t-add_to_cart",
-  purchase: "t-purchase",
-  banner_click: "t-banner_click",
-};
-
-// MAIN POLL FUNCTION
 function fetchAndRender() {
-
-  // Raw events
   fetch("/api/events?limit=50")
     .then(res => res.json())
     .then(data => {
-      renderKPIs(data);
-      renderBarChart(data.summary);
-      renderFeed(data.events);
+      document.getElementById("kpi-total").textContent = data.total ?? 0;
+      document.getElementById("kpi-views").textContent = data.summary?.page_view ?? 0;
+      document.getElementById("kpi-cart").textContent = data.summary?.add_to_cart ?? 0;
+      document.getElementById("kpi-purchase").textContent = data.summary?.purchase ?? 0;
     });
 
-  // Device analytics
   fetch("/api/devices")
     .then(res => res.json())
-    .then(data => renderDeviceChart(data));
+    .then(data => {
+      const container = document.getElementById("device-chart");
+      container.innerHTML = "";
 
-  // Spike analytics
+      data.slice(-5).forEach(d => {
+        const row = document.createElement("div");
+        row.innerHTML = `${d.deviceType || "unknown"} : ${d.event_count}`;
+        container.appendChild(row);
+      });
+    });
+
   fetch("/api/spikes")
     .then(res => res.json())
-    .then(data => renderSpikes(data));
+    .then(data => {
+      const container = document.getElementById("spike-alert");
+
+      if (!data.length) return;
+
+      const latest = data[data.length - 1];
+      container.innerHTML = `⚠️ Spike: ${latest.total_events} events`;
+    });
 }
 
-// KPI
-function renderKPIs(data) {
-  document.getElementById("kpi-total").textContent = data.total ?? 0;
-  document.getElementById("kpi-views").textContent = data.summary?.page_view ?? 0;
-  document.getElementById("kpi-cart").textContent = data.summary?.add_to_cart ?? 0;
-  document.getElementById("kpi-purchase").textContent = data.summary?.purchase ?? 0;
-}
-
-// Event type chart
-function renderBarChart(summary) {
-  const container = document.getElementById("bar-chart");
-  if (!summary) return;
-
-  const maxVal = Math.max(...Object.values(summary), 1);
-  container.innerHTML = "";
-
-  Object.entries(summary).forEach(([type, count]) => {
-    const pct = (count / maxVal * 100).toFixed(1);
-
-    container.innerHTML += `
-      <div class="bar-row">
-        <div class="bar-label ${TYPE_CLASS[type] || "t-unknown"}">${type}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-        <div class="bar-count">${count}</div>
-      </div>
-    `;
-  });
-}
-
-// Event feed
-function renderFeed(events) {
-  const feed = document.getElementById("feed");
-  if (!events) return;
-
-  feed.innerHTML = "";
-
-  [...events].reverse().forEach(e => {
-    const ts = e.timestamp ? e.timestamp.slice(11, 19) : "–";
-
-    feed.innerHTML += `
-      <div class="feed-row">
-        <span class="feed-ts">${ts}</span>
-        <span class="feed-type ${TYPE_CLASS[e.event_type] || "t-unknown"}">${e.event_type}</span>
-        <span class="feed-page">${e.page || "-"}</span>
-        <span class="feed-user">${(e.user_id || "-").slice(0, 8)}</span>
-      </div>
-    `;
-  });
-}
-
-// ✅ DEVICE CHART (FIXED)
-function renderDeviceChart(data) {
-  const container = document.getElementById("device-chart");
-
-  if (!data || data.length === 0) {
-    container.innerHTML = "<p>No device data yet</p>";
-    return;
-  }
-
-  const summary = {};
-
-  data.forEach(d => {
-    if (!d.deviceType) return;
-    summary[d.deviceType] = (summary[d.deviceType] || 0) + d.event_count;
-  });
-
-  const maxVal = Math.max(...Object.values(summary), 1);
-  container.innerHTML = "";
-
-  Object.entries(summary).forEach(([type, count]) => {
-    const pct = (count / maxVal * 100).toFixed(1);
-
-    container.innerHTML += `
-      <div class="bar-row">
-        <div class="bar-label">${type}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-        <div class="bar-count">${count}</div>
-      </div>
-    `;
-  });
-}
-
-// ✅ SPIKE ALERT (FIXED)
-function renderSpikes(data) {
-  const container = document.getElementById("spike-alert");
-
-  if (!data || data.length === 0) {
-    container.innerHTML = "<p>No spikes detected</p>";
-    return;
-  }
-
-  const latest = data[data.length - 1];
-
-  container.innerHTML = `
-    <div style="color:#f85149; font-weight:bold;">
-      "Traffic Spike Detected!"
-    </div>
-    <div style="margin-top:6px;">
-      ${latest.total_events} events in last window
-    </div>
-  `;
-}
-
-// START
 fetchAndRender();
 setInterval(fetchAndRender, POLL_INTERVAL_MS);
 </script>
