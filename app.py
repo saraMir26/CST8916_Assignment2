@@ -252,15 +252,19 @@ def get_events():
 @app.route("/api/devices")
 def get_devices():
     try:
-        data = read_latest_blob("device-data")
+        data = read_latest_blob("analytics-output")  # ✅ YOUR NAME
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route("/api/spikes")
 def get_spikes():
-    data = read_latest_blob("spike-data")
-    return jsonify(data)
+    try:
+        data = read_latest_blob("spikeoutput")  # ✅ YOUR NAME
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # ---------------------------------------------------------------------------
 # Entry point
