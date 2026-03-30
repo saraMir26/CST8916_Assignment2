@@ -296,6 +296,22 @@
   <!-- ── Panels ─────────────────────────────────────────────────── -->
   <div class="panels">
 
+    <!-- Device Type Breakdown -->
+    <div class="panel" style="max-width:400px;">
+      <h3>Device Type Activity (Stream Analytics)</h3>
+      <div id="device-chart">
+        <p style="color:#484f58; font-size:0.85rem;">Waiting for device data...</p>
+      </div>
+    </div>
+
+    <!-- Traffic Spikes -->
+    <div class="panel" style="max-width:400px;">
+      <h3>Traffic Spikes (Stream Analytics)</h3>
+      <div id="spike-alert">
+        <p style="color:#484f58; font-size:0.85rem;">No spikes detected yet</p>
+      </div>
+    </div>
+
     <!-- Event type breakdown -->
     <div class="panel" style="max-width:400px;">
       <h3>Events by Type</h3>
@@ -334,6 +350,7 @@
     };
 
     function fetchAndRender() {
+      // Existing (raw events)
       fetch("/api/events?limit=50")
         .then(res => res.json())
         .then(data => {
@@ -342,8 +359,19 @@
           renderFeed(data.events);
         })
         .catch(err => console.error("Poll error:", err));
-    }
 
+      // NEW → Device analytics
+      fetch("/api/devices")
+        .then(res => res.json())
+        .then(data => renderDeviceChart(data))
+        .catch(err => console.error("Device error:", err));
+
+      // NEW → Spike detection
+      fetch("/api/spikes")
+        .then(res => res.json())
+        .then(data => renderSpikes(data))
+        .catch(err => console.error("Spike error:", err));
+    }
     // ── KPI cards ────────────────────────────────────────────────
     function renderKPIs(data) {
       document.getElementById("kpi-total").textContent = data.total ?? 0;
@@ -454,6 +482,51 @@
       <span class="feed-page">High traffic detected</span>
       <span class="feed-user">${item.total_events}</span>
     `;
+        function renderDeviceChart(data) {
+          const container = document.getElementById("device-chart");
+          if (!data || data.length === 0) return;
+
+          // Get latest window only
+          const latestWindow = data[data.length - 1];
+
+          // Group by deviceType
+          const summary = {};
+          data.forEach(d => {
+            if (!d.deviceType) return;
+            summary[d.deviceType] = (summary[d.deviceType] || 0) + d.event_count;
+          });
+
+          const maxVal = Math.max(...Object.values(summary), 1);
+          container.innerHTML = "";
+
+          Object.entries(summary).forEach(([type, count]) => {
+            const pct = (count / maxVal * 100).toFixed(1);
+
+            const row = document.createElement("div");
+            row.className = "bar-row";
+            row.innerHTML = `
+             <div class="bar-label">${type}</div>
+             <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+             <div class="bar-count">${count}</div>
+           `;
+            container.appendChild(row);
+          });
+        }
+        function renderSpikes(data) {
+          const container = document.getElementById("spike-alert");
+          if (!data || data.length === 0) return;
+
+          const latest = data[data.length - 1];
+
+          container.innerHTML = `
+            <div style="color:#f85149; font-weight:bold;">
+            ⚠️ Traffic Spike Detected!
+            </div>
+            <div style="margin-top: 6px; font-size:0.85rem;">
+              ${latest.total_events} events in last window
+             </div>
+           `;
+        }
 
         feed.appendChild(row);
       });
