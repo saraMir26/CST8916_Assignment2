@@ -1,4 +1,15 @@
-# CST8916 – Week 10 Lab: Clickstream Analytics with Azure Event Hubs
+# ---------------------------------------------------------------------------
+# AI USAGE DISCLOSURE
+#
+# Parts of this project were developed with assistance from AI (ChatGPT).
+# AI was used to:
+# - Help debug Azure deployment issues
+# - Assist with Stream Analytics query structure
+# - Suggest improvements for frontend event tracking and dashboard logic
+#
+# All code has been reviewed, tested, and modified as needed to ensure correctness.
+# The author understands the functionality of the code and can explain all components.
+# ---------------------------------------------------------------------------
 #
 # This Flask app has two roles:
 #   1. PRODUCER  – receives click events from the browser and sends them to Azure Event Hubs
