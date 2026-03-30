@@ -208,6 +208,29 @@
     grid.appendChild(card);
   });
 
+  // ── Device info (for analytics) ─────────────────────────────────
+  function getDeviceInfo() {
+  const ua = navigator.userAgent;
+
+  let deviceType = "desktop";
+  if (/Mobi|Android/i.test(ua)) deviceType = "mobile";
+  if (/Tablet|iPad/i.test(ua)) deviceType = "tablet";
+
+  let browser = "Unknown";
+  if (ua.includes("Chrome")) browser = "Chrome";
+  else if (ua.includes("Firefox")) browser = "Firefox";
+  else if (ua.includes("Safari")) browser = "Safari";
+
+  let os = "Unknown";
+  if (ua.includes("Windows")) os = "Windows";
+  else if (ua.includes("Mac")) os = "macOS";
+  else if (ua.includes("Linux")) os = "Linux";
+  else if (ua.includes("Android")) os = "Android";
+  else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+
+  return { deviceType, browser, os };
+}
+
   // ── Track page_view on load ────────────────────────────────────
   trackEvent("page_view", window.location.pathname, null);
 
@@ -231,6 +254,11 @@
       product_id: productId,
       user_id:    USER_ID,
       session_id: SESSION_ID,
+
+      //  NEW FIELDS
+      deviceType: deviceInfo.deviceType,
+      browser: deviceInfo.browser,
+      os: deviceInfo.os
     };
 
     // Send the event to the Flask /track endpoint

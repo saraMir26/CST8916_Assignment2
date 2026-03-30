@@ -25,6 +25,7 @@ from flask_cors import CORS
 # EventData               – wraps a single event payload
 # ---------------------------------------------------------------------------
 from azure.eventhub import EventHubProducerClient, EventHubConsumerClient, EventData
+from azure.storage.blob import BlobServiceClient
 
 app = Flask(__name__, static_folder="static", template_folder="templates")
 CORS(app)
@@ -47,6 +48,36 @@ _event_buffer = []
 _buffer_lock = threading.Lock()
 MAX_BUFFER = 50
 
+
+#adding to test analytics
+def read_latest_blob(container_name):
+    conn_str = os.environ.get("AZURE_STORAGE_CONNECTION_STRING")
+    if not conn_str:
+        return []
+
+    blob_service = BlobServiceClient.from_connection_string(conn_str)
+    container_client = blob_service.get_container_client(container_name)
+
+    blobs = list(container_client.list_blobs())
+    if not blobs:
+        return []
+
+    latest_blob = sorted(blobs, key=lambda b: b.last_modified)[-1]
+    blob_client = container_client.get_blob_client(latest_blob.name)
+
+    content = blob_client.download_blob().readall().decode("utf-8")
+
+    # Handle JSON lines
+    lines = content.strip().split("\n")
+    data = []
+
+    for line in lines:
+        try:
+            data.append(json.loads(line))
+        except:
+            continue
+
+    return data
 
 # ---------------------------------------------------------------------------
 # Helper – send a single event dict to Azure Event Hubs
@@ -217,6 +248,16 @@ def get_events():
 
     return jsonify({"events": recent, "summary": summary, "total": len(recent)}), 200
 
+#Adding two endpoints to read from blob storage for the dashboard analytics
+@app.route("/api/devices")
+def get_devices():
+    data = read_latest_blob("device-data")
+    return jsonify(data)
+
+@app.route("/api/spikes")
+def get_spikes():
+    data = read_latest_blob("spike-data")
+    return jsonify(data)
 
 # ---------------------------------------------------------------------------
 # Entry point
