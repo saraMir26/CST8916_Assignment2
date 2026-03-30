@@ -251,8 +251,11 @@ def get_events():
 #Adding two endpoints to read from blob storage for the dashboard analytics
 @app.route("/api/devices")
 def get_devices():
-    data = read_latest_blob("device-data")
-    return jsonify(data)
+    try:
+        data = read_latest_blob("device-data")
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/api/spikes")
 def get_spikes():
