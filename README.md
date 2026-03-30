@@ -103,11 +103,11 @@ HAVING COUNT(*) > 4
 
 The dashboard displays:
 
-* ✅ Total events
-* ✅ Event type breakdown
-* ✅ Live event feed
-* ✅ Device type activity (Stream Analytics)
-* ✅ Traffic spike alerts
+*  Total events
+*  Event type breakdown
+*  Live event feed
+*  Device type activity (Stream Analytics)
+*  Traffic spike alerts
 
 ---
 
@@ -177,16 +177,10 @@ pip install -r requirements.txt
 
 ---
 
-## 4. Run Locally
-
-```
-python app.py
-```
-
 
 #  Video Demo
 
- YouTube Link: *(https://youtu.be/nqHr-T-jcfI)*
+ YouTube Link: *(https://youtu.be/ERraBoGg69Y)*
 
 The demo includes:
 
