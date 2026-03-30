@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopStream – Demo Store</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    /* ── Header ─────────────────────────────────────────────── */
+    header {
+      background: #1a1a2e;
+      color: white;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 { font-size: 1.4rem; letter-spacing: 1px; }
+    header nav a {
+      color: #a0c4ff;
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 0.9rem;
+    }
+    header nav a:hover { color: white; }
+
+    /* ── Banner ─────────────────────────────────────────────── */
+    .banner {
+      background: linear-gradient(135deg, #16213e, #0f3460);
+      color: white;
+      text-align: center;
+      padding: 36px 24px;
+    }
+    .banner h2 { font-size: 1.8rem; margin-bottom: 8px; }
+    .banner p  { font-size: 0.95rem; opacity: 0.8; }
+
+    /* ── Products ───────────────────────────────────────────── */
+    .section-title {
+      text-align: center;
+      padding: 28px 0 12px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .products {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      padding: 0 24px 40px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      width: 200px;
+      padding: 16px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    }
+    .card .emoji  { font-size: 2.8rem; text-align: center; margin-bottom: 10px; }
+    .card .name   { font-weight: 600; margin-bottom: 4px; }
+    .card .price  { color: #0f3460; font-size: 1rem; font-weight: 700; margin-bottom: 12px; }
+    .card button  {
+      width: 100%;
+      padding: 8px;
+      background: #0f3460;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.15s;
+    }
+    .card button:hover { background: #16213e; }
+
+    /* ── Event Log ──────────────────────────────────────────── */
+    .log-section {
+      max-width: 760px;
+      margin: 0 auto 48px;
+      padding: 0 24px;
+    }
+    .log-section h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    #event-log {
+      background: #1a1a2e;
+      color: #a0ffa0;
+      font-family: "Courier New", monospace;
+      font-size: 0.8rem;
+      border-radius: 8px;
+      padding: 14px;
+      height: 200px;
+      overflow-y: auto;
+    }
+    #event-log .log-line { margin-bottom: 4px; }
+    #event-log .log-line span.ts  { color: #888; }
+    #event-log .log-line span.evt { color: #ffd166; }
+    #event-log .log-line span.ok  { color: #06d6a0; }
+
+    /* ── Dashboard link ─────────────────────────────────────── */
+    .dashboard-link {
+      text-align: center;
+      padding-bottom: 40px;
+    }
+    .dashboard-link a {
+      display: inline-block;
+      padding: 12px 28px;
+      background: #e63946;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background 0.15s;
+    }
+    .dashboard-link a:hover { background: #c1121f; }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────────────────── -->
+<header>
+  <h1>ShopStream</h1>
+  <nav>
+    <a href="/">Store</a>
+    <a href="/dashboard">Live Dashboard</a>
+  </nav>
+</header>
+
+<!-- ── Hero banner ────────────────────────────────────────────── -->
+<div class="banner" id="hero-banner">
+  <h2>Welcome to ShopStream Live on Azure</h2>
+  <p>Every click you make is streamed to Azure Event Hubs in real time.</p>
+</div>
+
+<!-- ── Product grid ───────────────────────────────────────────── -->
+<p class="section-title">Featured Products</p>
+
+<div class="products" id="product-grid">
+  <!-- Cards are injected by JavaScript below -->
+</div>
+
+<!-- ── Event log ──────────────────────────────────────────────── -->
+<div class="log-section">
+  <h3>Event Stream Log (what gets sent to Event Hubs)</h3>
+  <div id="event-log"><span style="color:#888">Waiting for events...</span></div>
+</div>
+
+<!-- ── Dashboard link ─────────────────────────────────────────── -->
+<div class="dashboard-link">
+  <a href="/dashboard">View Live Analytics Dashboard →</a>
+</div>
+
+<script>
+  // ── Product catalogue ──────────────────────────────────────────
+  const PRODUCTS = [
+    { id: "p_shoe_01",   name: "Trail Runners",    price: 89.99,  emoji: "👟", page: "/products/shoes" },
+    { id: "p_laptop_02", name: "UltraBook Pro",    price: 999.00, emoji: "💻", page: "/products/laptops" },
+    { id: "p_watch_03",  name: "SmartWatch X",     price: 249.99, emoji: "⌚", page: "/products/watches" },
+    { id: "p_camera_04", name: "Pocket Camera",    price: 349.50, emoji: "📷", page: "/products/cameras" },
+    { id: "p_headph_05", name: "NoiseFree Buds",   price: 129.00, emoji: "🎧", page: "/products/audio" },
+    { id: "p_tshirt_06", name: "Classic Tee",      price: 29.99,  emoji: "👕", page: "/products/apparel" },
+  ];
+
+  // Simulated session ID – changes on every page load
+  const SESSION_ID = "s_" + Math.random().toString(36).slice(2, 8);
+  // Simulated user ID – in a real app this comes from auth
+  const USER_ID = "u_" + Math.random().toString(36).slice(2, 6);
+
+  // ── Render product cards ───────────────────────────────────────
+  const grid = document.getElementById("product-grid");
+  PRODUCTS.forEach(product => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="emoji">${product.emoji}</div>
+      <div class="name">${product.name}</div>
+      <div class="price">$${product.price.toFixed(2)}</div>
+      <button onclick="addToCart('${product.id}', '${product.page}')">Add to Cart</button>
+    `;
+    // Clicking the card body (not the button) = product_click event
+    card.addEventListener("click", (e) => {
+      if (e.target.tagName !== "BUTTON") {
+        trackEvent("product_click", product.page, product.id);
+      }
+    });
+    grid.appendChild(card);
+  });
+
+  // ── Track page_view on load ────────────────────────────────────
+  trackEvent("page_view", window.location.pathname, null);
+
+  // ── Track banner click ─────────────────────────────────────────
+  document.getElementById("hero-banner").addEventListener("click", () => {
+    trackEvent("banner_click", "/", null);
+  });
+
+  // ── Add to cart handler ────────────────────────────────────────
+  function addToCart(productId, page) {
+    trackEvent("add_to_cart", page, productId);
+  }
+
+  // ── Core tracking function ─────────────────────────────────────
+  // Sends a POST request to /track with the event details.
+  // The Flask backend publishes this to Azure Event Hubs.
+  function trackEvent(eventType, page, productId) {
+    const payload = {
+      event_type: eventType,
+      page:       page,
+      product_id: productId,
+      user_id:    USER_ID,
+      session_id: SESSION_ID,
+    };
+
+    // Send the event to the Flask /track endpoint
+    fetch("/track", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(payload),
+    })
+    .then(res => res.json())
+    .then(data => logEvent(payload, true))
+    .catch(err => logEvent(payload, false));
+  }
+
+  // ── Append a line to the on-page event log ─────────────────────
+  function logEvent(payload, success) {
+    const log  = document.getElementById("event-log");
+    const time = new Date().toISOString().slice(11, 23); // HH:MM:SS.mmm
+    const line = document.createElement("div");
+    line.className = "log-line";
+    line.innerHTML =
+      `<span class="ts">[${time}]</span> ` +
+      `<span class="evt">${payload.event_type}</span> ` +
+      `${payload.page || ""}` +
+      (payload.product_id ? ` (${payload.product_id})` : "") +
+      ` <span class="${success ? "ok" : "err"}">${success ? "→ sent to Event Hubs" : "× send failed"}</span>`;
+    // Remove placeholder text on first real event
+    if (log.querySelector("span[style]")) log.innerHTML = "";
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  }
+</script>
+</body>
+</html>
