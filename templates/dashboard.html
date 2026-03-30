@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ShopStream – Live Analytics Dashboard</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -23,7 +28,12 @@
       align-items: center;
       justify-content: space-between;
     }
-    header h1 { font-size: 1.2rem; color: #58a6ff; }
+
+    header h1 {
+      font-size: 1.2rem;
+      color: #58a6ff;
+    }
+
     .live-badge {
       display: inline-flex;
       align-items: center;
@@ -35,16 +45,27 @@
       font-size: 0.8rem;
       color: #3fb950;
     }
+
     .live-badge .dot {
-      width: 8px; height: 8px;
+      width: 8px;
+      height: 8px;
       background: #3fb950;
       border-radius: 50%;
       animation: pulse 1.4s infinite;
     }
+
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.3; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
     }
+
     header nav a {
       color: #58a6ff;
       text-decoration: none;
@@ -59,6 +80,7 @@
       gap: 16px;
       padding: 24px;
     }
+
     .kpi {
       background: #161b22;
       border: 1px solid #30363d;
@@ -67,11 +89,32 @@
       flex: 1;
       min-width: 160px;
     }
-    .kpi .label { font-size: 0.75rem; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; }
-    .kpi .value { font-size: 2rem; font-weight: 700; margin-top: 6px; color: #58a6ff; }
-    .kpi .value.green  { color: #3fb950; }
-    .kpi .value.yellow { color: #e3b341; }
-    .kpi .value.red    { color: #f85149; }
+
+    .kpi .label {
+      font-size: 0.75rem;
+      color: #8b949e;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .kpi .value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-top: 6px;
+      color: #58a6ff;
+    }
+
+    .kpi .value.green {
+      color: #3fb950;
+    }
+
+    .kpi .value.yellow {
+      color: #e3b341;
+    }
+
+    .kpi .value.red {
+      color: #f85149;
+    }
 
     /* ── Section layout ─────────────────────────────────────── */
     .panels {
@@ -80,6 +123,7 @@
       gap: 16px;
       padding: 0 24px 24px;
     }
+
     .panel {
       background: #161b22;
       border: 1px solid #30363d;
@@ -88,6 +132,7 @@
       flex: 1;
       min-width: 280px;
     }
+
     .panel h3 {
       font-size: 0.85rem;
       color: #8b949e;
@@ -103,10 +148,35 @@
       margin-bottom: 10px;
       gap: 10px;
     }
-    .bar-label { width: 120px; font-size: 0.85rem; color: #c9d1d9; flex-shrink: 0; }
-    .bar-track { flex: 1; background: #21262d; border-radius: 4px; height: 18px; overflow: hidden; }
-    .bar-fill  { height: 100%; background: #1f6feb; border-radius: 4px; transition: width 0.4s ease; }
-    .bar-count { width: 30px; text-align: right; font-size: 0.85rem; color: #8b949e; }
+
+    .bar-label {
+      width: 120px;
+      font-size: 0.85rem;
+      color: #c9d1d9;
+      flex-shrink: 0;
+    }
+
+    .bar-track {
+      flex: 1;
+      background: #21262d;
+      border-radius: 4px;
+      height: 18px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: #1f6feb;
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    .bar-count {
+      width: 30px;
+      text-align: right;
+      font-size: 0.85rem;
+      color: #8b949e;
+    }
 
     /* ── Event feed ─────────────────────────────────────────── */
     #feed {
@@ -115,25 +185,67 @@
       max-height: 320px;
       overflow-y: auto;
     }
+
     .feed-row {
       display: flex;
       gap: 8px;
       padding: 5px 0;
       border-bottom: 1px solid #21262d;
     }
-    .feed-row:last-child { border-bottom: none; }
-    .feed-ts    { color: #484f58; flex-shrink: 0; width: 90px; }
-    .feed-type  { flex-shrink: 0; width: 110px; }
-    .feed-page  { color: #8b949e; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .feed-user  { color: #484f58; flex-shrink: 0; width: 60px; }
+
+    .feed-row:last-child {
+      border-bottom: none;
+    }
+
+    .feed-ts {
+      color: #484f58;
+      flex-shrink: 0;
+      width: 90px;
+    }
+
+    .feed-type {
+      flex-shrink: 0;
+      width: 110px;
+    }
+
+    .feed-page {
+      color: #8b949e;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .feed-user {
+      color: #484f58;
+      flex-shrink: 0;
+      width: 60px;
+    }
 
     /* event type colours */
-    .t-page_view    { color: #58a6ff; }
-    .t-product_click{ color: #3fb950; }
-    .t-add_to_cart  { color: #e3b341; }
-    .t-purchase     { color: #f85149; }
-    .t-banner_click { color: #bc8cff; }
-    .t-unknown      { color: #8b949e; }
+    .t-page_view {
+      color: #58a6ff;
+    }
+
+    .t-product_click {
+      color: #3fb950;
+    }
+
+    .t-add_to_cart {
+      color: #e3b341;
+    }
+
+    .t-purchase {
+      color: #f85149;
+    }
+
+    .t-banner_click {
+      color: #bc8cff;
+    }
+
+    .t-unknown {
+      color: #8b949e;
+    }
 
     /* ── Footer ─────────────────────────────────────────────── */
     footer {
@@ -145,147 +257,215 @@
     }
   </style>
 </head>
+
 <body>
 
-<!-- ── Header ─────────────────────────────────────────────────── -->
-<header>
-  <h1>ShopStream – Live Analytics</h1>
-  <div style="display:flex; align-items:center; gap:16px;">
-    <div class="live-badge"><div class="dot"></div> LIVE</div>
-    <nav>
-      <a href="/">← Back to Store</a>
-    </nav>
-  </div>
-</header>
+  <!-- ── Header ─────────────────────────────────────────────────── -->
+  <header>
+    <h1>ShopStream – Live Analytics</h1>
+    <div style="display:flex; align-items:center; gap:16px;">
+      <div class="live-badge">
+        <div class="dot"></div> LIVE
+      </div>
+      <nav>
+        <a href="/">← Back to Store</a>
+      </nav>
+    </div>
+  </header>
 
-<!-- ── KPI row ────────────────────────────────────────────────── -->
-<div class="kpi-row">
-  <div class="kpi">
-    <div class="label">Total Events</div>
-    <div class="value" id="kpi-total">–</div>
-  </div>
-  <div class="kpi">
-    <div class="label">Page Views</div>
-    <div class="value green" id="kpi-views">–</div>
-  </div>
-  <div class="kpi">
-    <div class="label">Add to Cart</div>
-    <div class="value yellow" id="kpi-cart">–</div>
-  </div>
-  <div class="kpi">
-    <div class="label">Purchases</div>
-    <div class="value red" id="kpi-purchase">–</div>
-  </div>
-</div>
-
-<!-- ── Panels ─────────────────────────────────────────────────── -->
-<div class="panels">
-
-  <!-- Event type breakdown -->
-  <div class="panel" style="max-width:400px;">
-    <h3>Events by Type</h3>
-    <div id="bar-chart">
-      <p style="color:#484f58; font-size:0.85rem;">Waiting for events...</p>
+  <!-- ── KPI row ────────────────────────────────────────────────── -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="label">Total Events</div>
+      <div class="value" id="kpi-total">–</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Page Views</div>
+      <div class="value green" id="kpi-views">–</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Add to Cart</div>
+      <div class="value yellow" id="kpi-cart">–</div>
+    </div>
+    <div class="kpi">
+      <div class="label">Purchases</div>
+      <div class="value red" id="kpi-purchase">–</div>
     </div>
   </div>
 
-  <!-- Live event feed -->
-  <div class="panel">
-    <h3>Live Event Feed (from Azure Event Hubs)</h3>
-    <div id="feed">
-      <p style="color:#484f58; font-size:0.85rem;">Waiting for events...</p>
+  <!-- ── Panels ─────────────────────────────────────────────────── -->
+  <div class="panels">
+
+    <!-- Event type breakdown -->
+    <div class="panel" style="max-width:400px;">
+      <h3>Events by Type</h3>
+      <div id="bar-chart">
+        <p style="color:#484f58; font-size:0.85rem;">Waiting for events...</p>
+      </div>
     </div>
+
+    <!-- Live event feed -->
+    <div class="panel">
+      <h3>Live Event Feed (from Azure Event Hubs)</h3>
+      <div id="feed">
+        <p style="color:#484f58; font-size:0.85rem;">Waiting for events...</p>
+      </div>
+    </div>
+
   </div>
 
-</div>
+  <footer>
+    Polling <code>/api/events</code> every 2 seconds &nbsp;|&nbsp;
+    Events consumed from Azure Event Hubs &nbsp;|&nbsp;
+    CST8916 Week 10 Lab
+  </footer>
 
-<footer>
-  Polling <code>/api/events</code> every 2 seconds &nbsp;|&nbsp;
-  Events consumed from Azure Event Hubs &nbsp;|&nbsp;
-  CST8916 Week 10 Lab
-</footer>
+  <script>
+    // Poll /api/events every 2 seconds and refresh the UI
+    const POLL_INTERVAL_MS = 2000;
 
-<script>
-  // Poll /api/events every 2 seconds and refresh the UI
-  const POLL_INTERVAL_MS = 2000;
+    // Colour map for event types
+    const TYPE_CLASS = {
+      page_view: "t-page_view",
+      product_click: "t-product_click",
+      add_to_cart: "t-add_to_cart",
+      purchase: "t-purchase",
+      banner_click: "t-banner_click",
+    };
 
-  // Colour map for event types
-  const TYPE_CLASS = {
-    page_view:     "t-page_view",
-    product_click: "t-product_click",
-    add_to_cart:   "t-add_to_cart",
-    purchase:      "t-purchase",
-    banner_click:  "t-banner_click",
-  };
+    function fetchAndRender() {
+      fetch("/api/events?limit=50")
+        .then(res => res.json())
+        .then(data => {
+          renderKPIs(data);
+          renderBarChart(data.summary);
+          renderFeed(data.events);
+        })
+        .catch(err => console.error("Poll error:", err));
+    }
 
-  function fetchAndRender() {
-    fetch("/api/events?limit=50")
-      .then(res => res.json())
-      .then(data => {
-        renderKPIs(data);
-        renderBarChart(data.summary);
-        renderFeed(data.events);
-      })
-      .catch(err => console.error("Poll error:", err));
-  }
+    // ── KPI cards ────────────────────────────────────────────────
+    function renderKPIs(data) {
+      document.getElementById("kpi-total").textContent = data.total ?? 0;
+      document.getElementById("kpi-views").textContent = data.summary?.page_view ?? 0;
+      document.getElementById("kpi-cart").textContent = data.summary?.add_to_cart ?? 0;
+      document.getElementById("kpi-purchase").textContent = data.summary?.purchase ?? 0;
+    }
 
-  // ── KPI cards ────────────────────────────────────────────────
-  function renderKPIs(data) {
-    document.getElementById("kpi-total").textContent    = data.total ?? 0;
-    document.getElementById("kpi-views").textContent    = data.summary?.page_view    ?? 0;
-    document.getElementById("kpi-cart").textContent     = data.summary?.add_to_cart  ?? 0;
-    document.getElementById("kpi-purchase").textContent = data.summary?.purchase     ?? 0;
-  }
+    // ── Bar chart ─────────────────────────────────────────────────
+    function renderBarChart(summary) {
+      const container = document.getElementById("bar-chart");
+      if (!summary || Object.keys(summary).length === 0) return;
 
-  // ── Bar chart ─────────────────────────────────────────────────
-  function renderBarChart(summary) {
-    const container = document.getElementById("bar-chart");
-    if (!summary || Object.keys(summary).length === 0) return;
+      const maxVal = Math.max(...Object.values(summary), 1);
+      container.innerHTML = "";
 
-    const maxVal = Math.max(...Object.values(summary), 1);
-    container.innerHTML = "";
-
-    // Sort by count descending
-    const sorted = Object.entries(summary).sort((a, b) => b[1] - a[1]);
-    sorted.forEach(([type, count]) => {
-      const pct = (count / maxVal * 100).toFixed(1);
-      const row = document.createElement("div");
-      row.className = "bar-row";
-      row.innerHTML = `
+      // Sort by count descending
+      const sorted = Object.entries(summary).sort((a, b) => b[1] - a[1]);
+      sorted.forEach(([type, count]) => {
+        const pct = (count / maxVal * 100).toFixed(1);
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        row.innerHTML = `
         <div class="bar-label ${TYPE_CLASS[type] || "t-unknown"}">${type}</div>
         <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
         <div class="bar-count">${count}</div>
       `;
-      container.appendChild(row);
-    });
-  }
+        container.appendChild(row);
+      });
+    }
 
-  // ── Live feed ─────────────────────────────────────────────────
-  function renderFeed(events) {
-    const feed = document.getElementById("feed");
-    if (!events || events.length === 0) return;
+    // ── Live feed ─────────────────────────────────────────────────
+    function renderFeed(events) {
+      const feed = document.getElementById("feed");
+      if (!events || events.length === 0) return;
 
-    feed.innerHTML = "";
-    // Show newest first
-    [...events].reverse().forEach(e => {
-      const ts   = e.timestamp ? e.timestamp.slice(11, 19) : "–";
-      const type = e.event_type || "unknown";
-      const cls  = TYPE_CLASS[type] || "t-unknown";
-      const row  = document.createElement("div");
-      row.className = "feed-row";
-      row.innerHTML = `
+      feed.innerHTML = "";
+      // Show newest first
+      [...events].reverse().forEach(e => {
+        const ts = e.timestamp ? e.timestamp.slice(11, 19) : "–";
+        const type = e.event_type || "unknown";
+        const cls = TYPE_CLASS[type] || "t-unknown";
+        const row = document.createElement("div");
+        row.className = "feed-row";
+        row.innerHTML = `
         <span class="feed-ts">${ts}</span>
         <span class="feed-type ${cls}">${type}</span>
         <span class="feed-page">${e.page || "–"}</span>
         <span class="feed-user">${(e.user_id || "–").slice(0, 8)}</span>
       `;
-      feed.appendChild(row);
-    });
-  }
+        feed.appendChild(row);
+      });
+    }
 
-  // Kick off polling immediately, then repeat
-  fetchAndRender();
-  setInterval(fetchAndRender, POLL_INTERVAL_MS);
-</script>
+    function renderDeviceChart(data) {
+      const container = document.getElementById("bar-chart");
+
+      if (!data || data.length === 0) {
+        container.innerHTML = "<p>No device data yet</p>";
+        return;
+      }
+
+      container.innerHTML = "";
+
+      const latest = data.slice(-5); // last few windows
+
+      latest.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "bar-row";
+
+        row.innerHTML = `
+      <div class="bar-label">${item.deviceType || "unknown"}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${item.event_count * 10}px"></div>
+      </div>
+      <div class="bar-count">${item.event_count}</div>
+    `;
+
+        container.appendChild(row);
+      });
+    }
+
+    function fetchSpikes() {
+      fetch("/api/spikes")
+        .then(res => res.json())
+        .then(data => {
+          renderSpikes(data);
+        })
+        .catch(err => console.error("Spike error:", err));
+    }
+
+    function renderSpikes(data) {
+      const feed = document.getElementById("feed");
+
+      if (!data || data.length === 0) {
+        return;
+      }
+
+      feed.innerHTML = "";
+
+      data.slice(-5).reverse().forEach(item => {
+        const row = document.createElement("div");
+        row.className = "feed-row";
+
+        row.innerHTML = `
+      <span class="feed-ts">${item.window_end?.slice(11, 19)}</span>
+      <span class="feed-type t-purchase">SPIKE</span>
+      <span class="feed-page">High traffic detected</span>
+      <span class="feed-user">${item.total_events}</span>
+    `;
+
+        feed.appendChild(row);
+      });
+    }
+    // Kick off polling immediately, then repeat
+    fetchDeviceAnalytics();
+    fetchSpikes();
+    setInterval(() => {
+      fetchDeviceAnalytics();
+      fetchSpikes();
+    }, 5000);
+  </script>
 </body>
+
 </html>
