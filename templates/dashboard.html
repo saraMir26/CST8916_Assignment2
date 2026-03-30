@@ -340,38 +340,25 @@
     const POLL_INTERVAL_MS = 2000;
 
 function fetchAndRender() {
+
+  // events
   fetch("/api/events?limit=50")
     .then(res => res.json())
     .then(data => {
-      document.getElementById("kpi-total").textContent = data.total ?? 0;
-      document.getElementById("kpi-views").textContent = data.summary?.page_view ?? 0;
-      document.getElementById("kpi-cart").textContent = data.summary?.add_to_cart ?? 0;
-      document.getElementById("kpi-purchase").textContent = data.summary?.purchase ?? 0;
+      renderKPIs(data);
+      renderBarChart(data.summary);
+      renderFeed(data.events);
     });
 
+  // ✅ devices (correct way)
   fetch("/api/devices")
     .then(res => res.json())
-    .then(data => {
-      const container = document.getElementById("device-chart");
-      container.innerHTML = "";
+    .then(data => renderDeviceChart(data));
 
-      data.slice(-5).forEach(d => {
-        const row = document.createElement("div");
-        row.innerHTML = `${d.deviceType || "unknown"} : ${d.event_count}`;
-        container.appendChild(row);
-      });
-    });
-
+  // spikes
   fetch("/api/spikes")
     .then(res => res.json())
-    .then(data => {
-      const container = document.getElementById("spike-alert");
-
-      if (!data.length) return;
-
-      const latest = data[data.length - 1];
-      container.innerHTML = `⚠️ Spike: ${latest.total_events} events`;
-    });
+    .then(data => renderSpikes(data));
 }
 
 fetchAndRender();
